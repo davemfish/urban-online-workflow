@@ -7,11 +7,13 @@ import { getAllScenarios } from './requests';
 export default function App() {
   const [parcel, setParcel] = useState(null);
   const [savedScenarios, setSavedScenarios] = useState([]);
+  const [scenarioLayers, setScenarioLayers] = useState([]);
   const [patternSamplingMode, setPatternSamplingMode] = useState(false);
   const [patternSampleWKT, setPatternSampleWKT] = useState(null);
 
   const refreshSavedScenarios = async () => {
     const scenarios = await getAllScenarios();
+    console.log(scenarios)
     setSavedScenarios(scenarios);
   };
 
@@ -30,6 +32,7 @@ export default function App() {
           setParcel={setParcel}
           patternSamplingMode={patternSamplingMode}
           setPatternSampleWKT={setPatternSampleWKT}
+          savedScenarios={savedScenarios}
         />
         <EditMenu
           parcel={parcel}

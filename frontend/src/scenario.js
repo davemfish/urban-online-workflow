@@ -5,16 +5,20 @@ const scenarioStore = localforage.createInstance({
 });
 
 function newScenario(name) {
-  return { name: name, features: {} };
+  return {
+    name: name,
+    lulcURL: '/nlcd_extract.tif',
+    features: {},
+  };
 }
 
 export default {
   getAllScenarios: async () => {
-    const scenarioLookup = {};
+    const scenarios = [];
     await scenarioStore.iterate((value, key, idx) => {
-      scenarioLookup[key] = value.name;
+      scenarios.push(value)
     });
-    return scenarioLookup;
+    return scenarios;
   },
 
   clearStore: async () => {

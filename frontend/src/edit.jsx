@@ -70,7 +70,9 @@ export default function EditMenu(props) {
     if (status === 'complete') {
       const results = await getWallpaperResults(jobID);
       setParcelTable(results);
+      console.log(results)
       setJobID(null);
+      refreshSavedScenarios();
     }
   }, jobID ? 1000 : null);
 
@@ -97,7 +99,6 @@ export default function EditMenu(props) {
       jid = await convertToSingleLULC(parcel.coords, singleLULC, currentScenarioID);
     }
     setJobID(jid);
-    refreshSavedScenarios();
   }
 
   // TODO: do handlers  need to be wrapped in useCallback? 
@@ -224,11 +225,15 @@ export default function EditMenu(props) {
             </div>
           )}
         />
-        <Tab
+        {/*<Tab
           id="explore"
           title="Explore"
-          panel={<ScenarioTable scenarioLookup={savedScenarios} />}
-        />
+          panel={
+            <ScenarioTable
+              scenarios={savedScenarios}
+            />
+          }
+        />*/}
       </Tabs>
     </div>
   );

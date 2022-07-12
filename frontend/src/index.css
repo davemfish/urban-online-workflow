@@ -17,6 +17,7 @@ html, body, #root, .App {
   height: 100%;
   width: 60%;
   float: left;
+  position: relative;
 }
 
 .map-viewport {
@@ -41,10 +42,16 @@ html, body, #root, .App {
   padding-top: 1rem;
 }
 
-.layers-control {
+.base-layers-control {
   position: absolute;
   top: 3.5rem;
   left: 0.5rem;
+}
+
+.scenario-layers-control {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
 }
 
 .layers-control button {

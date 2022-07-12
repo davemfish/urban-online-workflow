@@ -6,7 +6,7 @@ import {
   RadioGroup,
 } from '@blueprintjs/core';
 
-function LayerCheckbox(props) {
+export function LayerCheckbox(props) {
   const { layer, label, setVisibility } = props;
   const [checked, setChecked] = useState(true);
 
@@ -24,7 +24,7 @@ function LayerCheckbox(props) {
   );
 }
 
-export default function LayerPanel(props) {
+export function LayerPanel(props) {
   const {
     layers,
     setVisibility,

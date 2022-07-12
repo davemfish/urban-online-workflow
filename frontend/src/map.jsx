@@ -18,8 +18,8 @@ import { Fill, Stroke, Style } from 'ol/style';
 
 import { Button, Icon } from '@blueprintjs/core';
 
-import lulcLayer from './map/lulcLayer';
-import LayerPanel from './map/LayerPanel';
+import getLULCLayer from './map/lulcLayer';
+import { LayerPanel } from './map/LayerPanel';
 import {
   satelliteLayer,
   streetMapLayer,
@@ -29,6 +29,8 @@ import {
   selectedFeatureStyle,
   patternSamplerBoxStyle
 } from './map/styles';
+
+const BASE_LULC_URL = 'https://storage.googleapis.com/natcap-urban-online-datasets-public/NLCD_2016_epsg3857.tif';
 
 const styleParcel = (zoom) => {
   const style = new Style({
@@ -117,7 +119,7 @@ const map = new Map({
   layers: [
     satelliteLayer,
     streetMapLayer,
-    lulcLayer,
+    getLULCLayer(BASE_LULC_URL, 'Landcover', 'base'),
     parcelLayer,
     selectionLayer,
     patternSamplerLayer,
@@ -135,9 +137,16 @@ const map = new Map({
 });
 
 export default function MapComponent(props) {
-  const { setParcel, patternSamplingMode, setPatternSampleWKT } = props;
+  const {
+    setParcel,
+    patternSamplingMode,
+    setPatternSampleWKT,
+    savedScenarios,
+  } = props;
   const [layers, setLayers] = useState([]);
+  const [scenarioLayers, setScenarioLayers] = useState([]);
   const [showLayerControl, setShowLayerControl] = useState(false);
+  const [showScenarioLayerControl, setShowScenarioLayerControl] = useState(false);
   const [basemap, setBasemap] = useState('Satellite');
   // refs for elements to insert openlayers-controlled nodes into the dom
   const mapElementRef = useRef();
@@ -151,6 +160,14 @@ export default function MapComponent(props) {
       setShowLayerControl(false);
     } else {
       setShowLayerControl(true);
+    }
+  };
+
+  const toggleScenarioLayerControl = () => {
+    if (showScenarioLayerControl) {
+      setShowScenarioLayerControl(false);
+    } else {
+      setShowScenarioLayerControl(true);
     }
   };
 
@@ -223,10 +240,24 @@ export default function MapComponent(props) {
     }
   }, [patternSamplingMode]);
 
+  useEffect(() => {
+    const scenLayers = [];
+    const mapLayers = map.getLayers().getArray();
+    savedScenarios.forEach((scen) => {
+      const { name, lulcURL } = scen;
+      mapLayers.filter((layer) => layer.get('title') === name)
+        .forEach((layer) => map.removeLayer(layer));
+      const layer = getLULCLayer(lulcURL, name);
+      map.addLayer(layer);
+      scenLayers.push(layer);
+    });
+    setScenarioLayers(scenLayers);
+  }, [savedScenarios]);
+
   return (
     <div className="map-container">
       <div ref={mapElementRef} className="map-viewport" />
-      <div className="layers-control">
+      <div className="layers-control base-layers-control">
         <Button
           onClick={toggleLayerControl}
         >
@@ -238,6 +269,19 @@ export default function MapComponent(props) {
           setVisibility={setVisibility}
           switchBasemap={switchBasemap}
           basemap={basemap}
+        />
+      </div>
+      <div className="layers-control scenario-layers-control">
+        <Button
+          onClick={toggleScenarioLayerControl}
+        >
+          <Icon icon="layers" />
+          Scenarios
+        </Button>
+        <LayerPanel
+          show={showScenarioLayerControl}
+          layers={[...scenarioLayers].reverse()} // copy array & reverse it
+          setVisibility={setVisibility}
         />
       </div>
     </div>
