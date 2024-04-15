@@ -31,7 +31,7 @@ const METRICS = {
   tot_c_cur: {
     label: 'change in carbon stored',
     units: {
-      'metric tons': (x) => x,
+      'metric tons': (x) => x*-1, // TODO: temp flip carbon
     },
     precision: 0,
   },
@@ -92,7 +92,7 @@ function ResultsDescription(props) {
   const coolingCost = deltaTable[scenarioName]['cdd_cost'];
   const tempDirection = (temperature >= 0) ? 'increase' : 'decrease';
 
-  const carbon = deltaTable[scenarioName]['tot_c_cur'];
+  const carbon = deltaTable[scenarioName]['tot_c_cur']*-1; // TODO: temp flip carbon
   const carbonDirection = (carbon >= 0) ? 'increase' : 'decrease';
 
   const natureSupplyBase = results['baseline']['nature_supply_percapita'];
@@ -108,7 +108,11 @@ function ResultsDescription(props) {
       METRICS.nature_supply_percapita.precision
     )}%`;
   }
-  const natureDirection = (natureSupplyDelta >= 0) ? 'increase' : 'decrease';
+  let natureDirection = 'change';
+  if (natureSupplyDelta > 0) { natureDirection = 'increase'; }
+  if (natureSupplyDelta < 0) { natureDirection = 'decrease'; }
+  // const natureDirection = (natureSupplyDelta >= 0) ? 'increase' : 'decrease';
+
   const natureBalance = results['baseline']['ntr_bal_avg'];
   const natureBalanceScen = results[scenarioName]['ntr_bal_avg'];
   const natureBalanceDemandMet = (
